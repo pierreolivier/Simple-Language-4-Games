@@ -8,34 +8,26 @@
 %}
 
 //%token START END ASSIGN SEMICOLON IDENT REAL INTEGER
-%token NUM ID
+%token BOOLEAN NUM ID
 %token TYPE ASSIGN COLON
 %token BRACKET_START BRACKET_END ACCOLADE_START ACCOLADE_END COMMA
+%token IF ELSE WHILE FOR
+%left EQ NE GE LE G L
+%left '+' '-'
+%left '*' '/'
 
-%union { char str[0x100]; double num; }
+%union {
+    char str[0x100];
+    double num;
+    int boolean;
+}
 %type<str> ID
-%type<num> NUM
+%type<num> NUM expr
+%type<boolean> BOOLEAN boolean_expr
 
 %start program
 
 %%
-/*
-program : START instList END { printf("program\n"); }
-;
-
-instList : instList inst
-	| instruct
-;
-
-inst : IDENT ASSIGN expr_number SEMICOLON { printf("assign %s with %f\n", $1, $3); }
-        | IDENT ASSIGN expr_str SEMICOLON { printf("assign %s with %s\n", $1, $3); }
-;
-
-expr_number : INTEGER { printf("integer %f\n", $1); sprintf($$,"i:%d",$1); }
-	| REAL { printf("real %f\n", $1); sprintf($$,"r:%g",$1); }
-;
-expr_str : IDENT { printf("ident %s\n", $1); sprintf($$,"s:%s",$1); }
-;*/
 program :       instructions { printf("program\n"); }
 ;
 instructions :  instructions instruction
@@ -43,16 +35,40 @@ instructions :  instructions instruction
 ;
 instruction :   function
                 | allocation
+                | condition
 ;
 function :      TYPE ID BRACKET_START BRACKET_END ACCOLADE_START instructions ACCOLADE_END {printf("function\n");}
                 | TYPE ID BRACKET_START args BRACKET_END ACCOLADE_START instructions ACCOLADE_END {printf("function with args\n");}
                 | ID BRACKET_START BRACKET_END COLON
                 | ID BRACKET_START parameters BRACKET_END COLON
 ;
-allocation :    ID ASSIGN ID COLON
-                | ID ASSIGN NUM COLON
-                | ID ASSIGN ID BRACKET_START BRACKET_END COLON
+allocation :    ID ASSIGN ID BRACKET_START BRACKET_END COLON
                 | ID ASSIGN ID BRACKET_START parameters BRACKET_END COLON
+                | ID ASSIGN expr COLON { printf("%f\n", $3); }
+                | ID ASSIGN boolean_expr COLON
+;
+condition:      IF BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END { printf("%f\n", $3); }
+                | IF BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END ELSE ACCOLADE_START instructions ACCOLADE_END
+                | WHILE BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+                | FOR BRACKET_START ID ASSIGN NUM COLON boolean_expr COLON ID ASSIGN expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+
+;
+boolean_expr:
+                expr
+;
+expr :          NUM {$$ = $1;}
+                | ID {$$ = 1;}
+                | expr '+' expr {$$ = $1 + $3;}
+                | expr '-' expr {$$ = $1 - $3;}
+                | expr '*' expr {$$ = $1 * $3;}
+                | expr '/' expr {$$ = $1 / $3;}
+                | expr L expr   {$$ = $1 < $3;}
+                | expr G expr   {$$ = $1 > $3;}
+                | expr GE expr  {$$ = $1 >= $3;}
+                | expr LE expr  {$$ = $1 <= $3;}
+                | expr NE expr  {$$ = $1 != $3;}
+                | expr EQ expr  {$$ = $1 == $3;}
+                | BRACKET_START expr BRACKET_END {$$ = $2;}
 ;
 args :          TYPE ID
                 | args COMMA TYPE ID
