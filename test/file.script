@@ -1,5 +1,6 @@
 num salut (num a, num z, void l) {
-    if(42>3) {
+    a = 2;
+    if(1) {
         salut (a,z);
     }
 }

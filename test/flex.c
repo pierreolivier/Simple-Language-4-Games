@@ -13,7 +13,7 @@ id	[a-zA-Z_][0-9a-zA-Z_]*
 
 %%
 "num"|"void"    {return (TYPE);}
-"1"|"0"         { return (BOOLEAN); }
+[01]        { return (BOOLEAN); }
 "if"        { return(IF); }
 "else"        { return(ELSE); }
 "for"       { return(FOR); }

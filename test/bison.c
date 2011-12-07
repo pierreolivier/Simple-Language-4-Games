@@ -16,6 +16,7 @@
 %left '+' '-'
 %left '*' '/'
 
+
 %union {
     char str[0x100];
     double num;
@@ -37,25 +38,24 @@ instruction :   function
                 | allocation
                 | condition
 ;
-function :      TYPE ID BRACKET_START BRACKET_END ACCOLADE_START instructions ACCOLADE_END {printf("function\n");}
-                | TYPE ID BRACKET_START args BRACKET_END ACCOLADE_START instructions ACCOLADE_END {printf("function with args\n");}
+function :      TYPE ID BRACKET_START BRACKET_END ACCOLADE_START instructions ACCOLADE_END { printf("function\n"); }
+                | TYPE ID BRACKET_START args BRACKET_END ACCOLADE_START instructions ACCOLADE_END { printf("function with args\n"); }
                 | ID BRACKET_START BRACKET_END COLON
                 | ID BRACKET_START parameters BRACKET_END COLON
 ;
 allocation :    ID ASSIGN ID BRACKET_START BRACKET_END COLON
                 | ID ASSIGN ID BRACKET_START parameters BRACKET_END COLON
                 | ID ASSIGN expr COLON { printf("%f\n", $3); }
-                | ID ASSIGN boolean_expr COLON
 ;
-condition:      IF BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END { printf("%f\n", $3); }
-                | IF BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END ELSE ACCOLADE_START instructions ACCOLADE_END
-                | WHILE BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
-                | FOR BRACKET_START ID ASSIGN NUM COLON boolean_expr COLON ID ASSIGN expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+condition:      IF BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+                | IF BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END ELSE ACCOLADE_START instructions ACCOLADE_END
+                | WHILE BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+                | FOR BRACKET_START ID ASSIGN NUM COLON expr COLON ID ASSIGN expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
 
-;
+;/*
 boolean_expr:
-                expr
-;
+                BOOLEAN { $$ = $1; printf("bool: %d\n", $$);}//expr {if($1 >= 1) $$ = 1; else $$ = 0; }
+;*/
 expr :          NUM {$$ = $1;}
                 | ID {$$ = 1;}
                 | expr '+' expr {$$ = $1 + $3;}
