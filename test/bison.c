@@ -6,7 +6,6 @@
 	int lineNumber;
 	extern FILE * yyin;
 %}
-
 //%token START END ASSIGN SEMICOLON IDENT REAL INTEGER
 %token BOOLEAN NUM ID
 %token TYPE ASSIGN COLON
@@ -47,15 +46,15 @@ allocation :    ID ASSIGN ID BRACKET_START BRACKET_END COLON
                 | ID ASSIGN ID BRACKET_START parameters BRACKET_END COLON
                 | ID ASSIGN expr COLON { printf("%f\n", $3); }
 ;
-condition:      IF BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
-                | IF BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END ELSE ACCOLADE_START instructions ACCOLADE_END
+condition:      IF BRACKET_START boolean_expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
+                //| IF BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END ELSE ACCOLADE_START instructions ACCOLADE_END
                 | WHILE BRACKET_START expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
                 | FOR BRACKET_START ID ASSIGN NUM COLON expr COLON ID ASSIGN expr BRACKET_END ACCOLADE_START instructions ACCOLADE_END
-
-;/*
+;
 boolean_expr:
-                BOOLEAN { $$ = $1; printf("bool: %d\n", $$);}//expr {if($1 >= 1) $$ = 1; else $$ = 0; }
-;*/
+                //BOOLEAN { $$ = $1; printf("bool: %d\n", $$);}//
+                expr { if($1 >= 1) $$ = 1; else $$ = 0; }
+;
 expr :          NUM {$$ = $1;}
                 | ID {$$ = 1;}
                 | expr '+' expr {$$ = $1 + $3;}
