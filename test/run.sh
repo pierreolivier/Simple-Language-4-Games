@@ -6,7 +6,7 @@ mv bison.c bison.y
 bison -d bison.y
 flex flex.f
 
-gcc bison.tab.c lex.yy.c
+gcc parser.c bison.tab.c lex.yy.c
 
 mv flex.f flex.c
 mv bison.y bison.c

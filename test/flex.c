@@ -10,10 +10,9 @@
 
 num	[0-9]+|[0-9]+\.[0-9]*|\.[0-9]+
 id	[a-zA-Z_][0-9a-zA-Z_]*
-
+boolean [01]
 %%
 "num"|"void"    {return (TYPE);}
-[01]        { return (BOOLEAN); }
 "if"        { return(IF); }
 "else"        { return(ELSE); }
 "for"       { return(FOR); }
@@ -35,11 +34,14 @@ id	[a-zA-Z_][0-9a-zA-Z_]*
 ">"         { return (G); }
 "*"|"/"|"+"|"-"    { return *yytext; }
 
+"println"	{ return (PRINT); }
+
+{boolean}   { sscanf(yytext, "%d", &yylval.boolean); return (BOOLEAN); }
 {num}       { sscanf(yytext,"%lf",&yylval.num); return(NUM); }
 {id}	    { sprintf(yylval.str,"%s",yytext); return(ID); }
 
 "\n"	    { ++lineNumber; }
-[ \t]+	    { /* nothing to be done */ }
+[" ""\t"]+	    { /* nothing to be done */ }
 .		    { char msg[0x20]; sprintf(msg,"lexical error <%s>",yytext); yyerror(msg); }
 
 %%

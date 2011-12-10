@@ -1,6 +1,8 @@
-num salut (num a, num z, void l) {
-    a = 2;
-    if(1) {
-        salut (a,z);
-    }
-}
+num a;
+num b;
+num x;
+
+a = 10;
+x = a+1;
+s = 2;
+println(s);
